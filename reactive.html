@@ -15,31 +15,6 @@
 </body>
 
 <script>
-  let callbacks = new Map();
-
-  let reactivities = new Map();
-  let usedReactivities = [];
-
-  let object = {
-    r: 0,
-    g: 0,
-    b: 0,
-  };
-
-  let po = reactive(object);
-
-  effect(() => {
-    document.getElementById('r').value = po.r;
-    document.getElementById('g').value = po.g;
-    document.getElementById('b').value = po.b;
-
-    document.getElementById('color').style.backgroundColor = `rgb(${po.r},${po.g},${po.b})`;
-  });
-
-  document.getElementById('r').addEventListener('input', event => po.r = event.target.value);
-  document.getElementById('g').addEventListener('input', event => po.g = event.target.value);
-  document.getElementById('b').addEventListener('input', event => po.b = event.target.value);
-
   function reactive(object) {
     if (reactivities.has(object)) {
       return reactivities.get(object);
@@ -83,7 +58,30 @@
     }
   }
 
+  let callbacks = new Map();
 
+  let reactivities = new Map();
+  let usedReactivities = [];
+
+  let object = {
+    r: 0,
+    g: 0,
+    b: 0,
+  };
+
+  let po = reactive(object);
+
+  effect(() => {
+    document.getElementById('r').value = po.r;
+    document.getElementById('g').value = po.g;
+    document.getElementById('b').value = po.b;
+
+    document.getElementById('color').style.backgroundColor = `rgb(${po.r},${po.g},${po.b})`;
+  });
+
+  document.getElementById('r').addEventListener('input', event => po.r = event.target.value);
+  document.getElementById('g').addEventListener('input', event => po.g = event.target.value);
+  document.getElementById('b').addEventListener('input', event => po.b = event.target.value);
 
 </script>
 
