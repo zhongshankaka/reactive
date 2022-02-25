@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>调色器</title>
 </head>
 
 <body>
@@ -14,59 +14,8 @@
   <div id="color" style="width: 100px; height: 100px"></div>
 </body>
 
+<script src="./reactive.js"></script>
 <script>
-  function reactive(object) {
-    if (reactivities.has(object)) {
-      return reactivities.get(object);
-    }
-
-    let proxy = new Proxy(object, {
-      set(target, prop, value) {
-        Reflect.set(target, prop, value);
-        if (callbacks.get(target)) {
-          // 4. 设置每次set响应式对象的属性值时，遍历调用注册的回调函数
-          if (callbacks.get(target).has(prop)) {
-            for (let callback of callbacks.get(target).get(prop)) {
-              callback();
-            }
-          }
-        }
-      },
-      get(target, prop) {
-        // 2. 响应式对象的属性值每被get一次，统计需要做响应式处理的对象及其属性值
-        usedReactivities.push([target, prop]);
-        let value = Reflect.get(target, prop);
-        if (typeof value === 'object') {
-          return reactive(value);
-        }
-        return value;
-      }
-    });
-    reactivities.set(object, proxy);
-    return proxy;
-  }
-
-  function effect(callback) {
-    usedReactivities = [];
-    // 1. 初始化代理对象 getter
-    callback();
-    // 3. 为统计出来的需要做响应式处理的对象的属性值，注册回调函数
-    for (let [target, prop] of usedReactivities) {
-      if (!callbacks.has(target)) {
-        callbacks.set(target, new Map());
-      }
-      if (!callbacks.get(target).has(prop)) {
-        callbacks.get(target).set(prop, []);
-      }
-      callbacks.get(target).get(prop).push(callback);
-    }
-  }
-
-  const callbacks = new Map();
-
-  const reactivities = new Map();
-  let usedReactivities = [];
-
   const object = {
     r: 0,
     g: 0,
@@ -82,10 +31,6 @@
 
     document.getElementById('color').style.backgroundColor = `rgb(${po.r},${po.g},${po.b})`;
   });
-
-  console.log({usedReactivities})
-  console.log({reactivities})
-  console.log({callbacks})
 
   document.getElementById('r').addEventListener('input', event => po.r = event.target.value);
   document.getElementById('g').addEventListener('input', event => po.g = event.target.value);
